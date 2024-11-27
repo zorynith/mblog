@@ -93,10 +93,11 @@ AIeditor 的核心优势在于其智能化的文本处理能力。无论是续�
 
 # 如何搭建
 ## 1 注册cloudflare
-cloudflare 官网（https://dash.cloudflare.com/）
+cloudflare 官网  [https://dash.cloudflare.com/](https://dash.cloudflare.com/)
 ## 2 安装nodejs
-从官方网站（https://nodejs.org/）安装Node.js
-校验。
+从官方网站 [https://nodejs.org/](https://nodejs.org/) 安装Node.js
+
+校验安装成功，在终端中输入
 `node -v`
 如果安装成功，你会看到Node.js的版本号显示在屏幕上。同样，你也可以通过以下命令来检查npm（Node.js的包管理工具）的版本：
 `
@@ -172,8 +173,8 @@ SITEINFO.homepagecontent="blog"
 cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
 #默认的主题颜色 可以用dark 或者light
 SITEINFO.theme="dark"
-#评论使用的github repo ，格式为username/repo
-SITEINFO.public_github_repo="jiangsi/public"
+#评论使用的github repo ，格式为username/repo  ,评论使用的是utterances,需要站长在github上创建一个repo。
+SITEINFO.public_github_repo="jiangsi/public"           
 #登录后跳转到后台
 SITEINFO.app_redirect_path="/dashboard"
 #默认语言。
@@ -314,7 +315,7 @@ Free 1 自由 1
 绑定好信用卡之后，可以直接在dashbaord上创建一个bucket 的桶。然后在桶的setting 中的Custom domains，连结自己注册、或者解析在cloudflare 上的域名，目前R2 如果公开的话，必须要通过这个连接来绑定域名。
 
 ![m3xub3cit032nxw3beimage.png](https://image.jiangsi.com/blog/m3xub3cit032nxw3beimage.png)
-一般我们要输入一个二级别域名比如 images.edgecd.com
+一般我们要输入一个二级别域名比如 images.your-domain.com 
 
 并且将桶的名字 填写到配置文件
 ```
@@ -324,7 +325,7 @@ bucket_name = "aiedgeblog"
 ```
 并且向上修改配置文件中的oss域配置
 ```
-SITEINFO.oss_url="https://images.edgecd.com"
+SITEINFO.oss_url="https://images.your-domain.com"
 ```
 
 ### 6.5 生成一次所有配置文件的类型定义
@@ -386,7 +387,7 @@ https://你给项目起的名字.你的用户名.workers.dev Current Version ID:
 
 需要配置openai 兼容的api 地址
 国内同学建议deepseek,10元充值完全用不完
-注意地址 https://api.deepseek.com 最后要没有斜杠结尾。
+注册地址 https://www.deepseek.com/
 
 
 ### 11.1 在wrangler.toml 中配置
@@ -398,6 +399,7 @@ ai_endpoint="https://api.deepseek.com"
 ai_model="deepseek-chat"
 ```
 
+注意地址 https://api.deepseek.com 最后要没有斜杠结尾。
 或者你喜欢的任何openai兼容的模型即可。
 如果不填写，则默认使用cloudflare AI模型。参数为cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
 

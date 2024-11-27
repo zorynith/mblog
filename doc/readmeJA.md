@@ -86,10 +86,10 @@ Cloudflare R2 のストレージを使用すると、基本的に自由に内容
 
 # どのように構築するか
 ## 1 Cloudflare
-Cloudflare のダッシュボードにログインします（https://dash.cloudflare.com/）
+Cloudflare のダッシュボードにログインします [https://dash.cloudflare.com/](https://dash.cloudflare.com/)
 
 ## 2 Node.js のインストール
-公式サイト（https://nodejs.org/）から Node.js をインストールします。
+公式サイト [https://nodejs.org/](https://nodejs.org/) から Node.js をインストールします。
 確認方法：
 `node -v`
 インストールが成功すると、Node.js のバージョン番号が表示されます。同様に、npm（Node.js のパッケージマネージャー）のバージョンも以下のコマンドで確認できます：
@@ -108,17 +108,170 @@ npm（Node Package Manager）を使用して Wrangler をインストールし�
 
 ログインが成功すると、Wrangler のさまざまな機能を使用する準備が整います。新しい Workers プロジェクトの作成や既存のコードのデプロイなど、Wrangler はシームレスな体験を提供します。コマンドラインインターフェースを使用して、プロジェクトを簡単に管理し、パフォーマンスを監視し、リアルタイムでデバッグすることができます。
 
-## 4 D1 データベースの作成
-D1 は Cloudflare が提供するデータベースサービスで、ブログデータの保存に使用されます。
 
-Cloudflare のダッシュボードにログインし、左側のメニューから D1 を選択します。D1 データベースを作成し、データベース名を設定します。作成が完了したら、データベースの詳細ページに移動し、データベースの接続文字列をコピーします。この接続文字列は後で使用します。
+## 4 クローン本プロジェクト
+git clone でプロジェクトをローカルにクローンし、すべての依存関係をインストールします。
 
-## 5 KV の作成
-KV は Cloudflare が提供するキー値ストアサービスで、キー値の加速と保存に使用されます。
+```
+git clone https://github.com/jiangsi/edgecd-blog
+cd  edgecd-blog
+npm install
+```
 
-Cloudflare のダッシュボードにログインし、左側のメニューから KV を選択します。KV 名前空間を作成し、名前を設定します。作成が完了したら、名前空間の詳細ページに移動し、名前空間 ID をコピーします。この ID は後で使用します。
+## 5 設定ファイルwrangler.tomlを編集
+example.wrangler.toml をコピーして、wrangler.toml という名前に変更します。
+このファイルはwrangler バージョンの基礎です
 
-## 6 R2 の作成
+```toml
+#:schema node_modules/wrangler/config-schema.json
+
+#プロジェクト名、cloudflare のworkersで見られます
+name = "aiedgeblog"     
+
+compatibility_date = "2024-10-04"
+assets = { directory = "./build/client" }
+main = "./server.ts"
+
+
+[vars]
+
+MY_VAR = "Hello from edgecd blog"
+#暗号化登録ログインパスワードに使用。長い文字列を書く必要があります
+SECRET = "SECRET"
+SITEINFO.BLOG_prefix_url="/blog"
+
+#サイトの基本情報。
+SITEINFO.name="name"
+SITEINFO.author="author"
+SITEINFO.desc="desc"
+SITEINFO.summary="summary"
+
+#アバター
+SITEINFO.avatar="https://ui.shadcn.com/avatars/02.png"
+#サイトのアドレス
+SITEINFO.website_url="https://edgecd.com"
+SITEINFO.website_name="edgecd"
+#いくつかの外部リンク
+SITEINFO.github_url="https://github.com/jiangsi/edgecd-blog"
+SITEINFO.twitter_url=""
+SITEINFO.instagram_url=""
+SITEINFO.youtube_url=""
+#R2バインドドメイン
+SITEINFO.oss_url="https://image.edgecd.com"
+SITEINFO.homepagecontent="blog"
+#デフォルトのAIモデル、cloudflare のモデルを呼び出す、バックエンドで変更可能
+cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
+#デフォルトのテーマカラー、dark またはlight を使用できます
+SITEINFO.theme="dark"
+#コメントに使用するgithub repo 、フォーマットはusername/repo 、コメントはutterancesを使用、サイト管理者はgithubでrepoを作成する必要があります。
+SITEINFO.public_github_repo="jiangsi/public"           
+#ログイン後、バックエンドにリダイレクト
+SITEINFO.app_redirect_path="/dashboard"
+#デフォルトの言語。
+SITEINFO.locale="zh"
+#edgecdの著作権を隠すかどうか。このサイトをサポートしたい場合は、falseのままにしてください
+SITEINFO.hide_copyright=false
+#登録を禁止するかどうか。管理者登録後に閉じることができます。
+SITEINFO.disable_signup=false
+SITEINFO.logo = ""
+
+
+
+
+[[kv_namespaces]]
+binding = "KV"
+id = ""
+
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = ""
+# aiedgeblog-sessionStoragekv
+
+[[d1_databases]]   
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "edgeblog"
+database_id = ""
+migrations_dir = "./drizzle/migrations/d1" 
+
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "aiedgeblog"
+
+
+# Workers Logs
+# Docs: https://developers.cloudflare.com/workers/observability/logs/workers-logs/
+# Configuration: https://developers.cloudflare.com/workers/observability/logs/workers-logs/#enable-workers-logs
+[observability]
+enabled = true
+
+
+[ai]
+binding = "AI" 
+```
+
+## 6 6 Cloudflareリソースの作成し、wrangler.tomlに記入
+基本情報を記入した後、wranglerを使用して必要なリソースを作成します。
+
+### 6.1 KVリソースの作成
+edgecdblog と edgeblog-sessionStoragekv という名前で2つのKVリソースを作成します。名前は自由に変更できますが、覚えやすいものにしてください。
+```
+wrangler kv namespace create edgecdblog 
+wrangler kv namespace create edgeblog-sessionStoragekv
+```
+
+成功のメッセージが表示されます。
+
+```
+✨ Success! Add the following to your configuration file in your kv_namespaces array: 
+[[kv_namespaces]] 
+binding = "edgecdblog"
+id = "2835bf6fc1bb4e09963eae48bf06b7bc"
+```
+bindingが一致しない場合は無視し、idのみを
+binding = "KV" の下のid
+と
+binding = "SESSION_KV" の下のidにコピーします。
+期待される設定ファイルは次のようになります。
+
+```
+[[kv_namespaces]] 
+binding = "KV"
+id = "2835bf6fc1bb4e09963eae48bf06b7bc"
+#edgecd-blog-free
+```
+
+### 6.2 D1の作成
+
+```
+wrangler d1 create データベースの名前
+例えば
+wrangler d1 create edgeblog
+```
+
+得られたidをdatabase_idに記入し、名前を変更した場合はdatabase_nameもそれに合わせて変更します。
+```
+[[d1_databases]]binding = "DB"
+database_name = "edgeblog"
+database_id = ""
+migrations_dir = "./drizzle/migrations/d1"
+```
+
+### 6.3 ローカルとリモートの両方でD1データベースを初期化して作成
+ターミナルで実行
+```
+npm run d1:g
+```
+実行すると、プロジェクト drizzle/migrations/d1/に初期化されたSQLファイルが生成されます。
+package.json の d1:up と d1:up:local のapplyの後ろが、先ほど作成したD1の名前であるか確認し、そうでない場合は、先ほど作成したd1の名前に変更します。
+"d1:up": "npx wrangler d1 migrations apply edgeblog --remote",
+"d1:up:local": "npx wrangler d1 migrations apply edgeblog --local"
+その後、ターミナルで実行
+npm run d1:up:local
+npm run d1:up
+それぞれ確認が必要で、Yを押して確認後、データベースを初期化して作成します。
+
+### 6.4 R2 の作成
 R2 は Cloudflare が提供する静的ファイルホスティングサービスで、写真、ビデオ、添付ファイルの保存に使用されます。ブログで添付ファイルを使用しない場合、R2 を作成する必要はありません。
 
 R2 を作成するには、Cloudflare のダッシュボードにログインし、左側のメニューから R2 Object Storage を選択します。クレジットカードをバインドする必要がありますが、心配する必要はありません。無料枠は非常に大きいです。R2 の価格を参照してください。
@@ -132,7 +285,7 @@ R2 を作成するには、Cloudflare のダッシュボードにログインし
 クレジットカードをバインドした後、ダッシュボードでバケットを作成し、バケットの設定の Custom domains で、Cloudflare で登録または解決されたドメインをバインドします。現在、R2 が公開されている場合、このバインドを通じてドメインをバインドする必要があります。
 
 ![m3xub3cit032nxw3beimage.png](https://image.jiangsi.com/blog/m3xub3cit032nxw3beimage.png)
-通常、images.edgecd.com のようなサブドメインを入力し、バケット名を設定ファイルに記入します。
+通常、images.your-domain.com のようなサブドメインを入力し、バケット名を設定ファイルに記入します。
 
 ```toml
 [[r2_buckets]]
@@ -142,32 +295,32 @@ bucket_name = "aiedgeblog"
 
 また、設定ファイルの oss ドメイン設定を更新します。
 ```toml
-SITEINFO.oss_url="https://images.edgecd.com"
+SITEINFO.oss_url="https://images.your-domain.com"
 ```
 
-## 7 すべての設定ファイルの型定義を生成
+### 6.5 すべての設定ファイルの型定義を生成
 `npm run typegen`
 
-## 8 ロゴの設定
+### 6.6 ロゴの設定
 ロゴを R2 にアップロードし、URL をコピーして設定ファイルに設定します。
 ```toml
 SITEINFO.logo = "logo url"
 ```
 
-## 9 favicon アイコンの設定
+### 6.7 favicon アイコンの設定
 ファイルはルートディレクトリにあります。
 `public/favicon.ico`
 これを置き換えるだけです。
 
 これですべての設定が完了しました。デバッグとデプロイを行うことができます。
 
-## 10 ローカルデバッグ
+## 7 ローカルデバッグ
 以下のコマンドでローカルで起動できます。
 `npm run dev`
 
 ターミナルに表示されるリンクをクリックして、ページを開いて確認できます。この時点で接続されているデータベースはローカルのものです。
 
-## 11 デプロイ
+## 8 デプロイ
 以下のコマンドでデプロイします。このコマンドはまずローカルでビルドし、次に Cloudflare のサーバーに公開します。
 `npm run deploy`
 
@@ -179,22 +332,22 @@ https://プロジェクト名.ユーザー名.workers.dev Current Version ID: d3
 ```
 この時点で、このドメインを直接アクセスして効果を確認できます。
 
-## 12 ドメインのバインド
+## 9 ドメインのバインド
 Cloudflare のダッシュボードにログインし、左側のメニューから Workers & Pages を選択します。リストからプロジェクトを選択し、プロジェクトの詳細ページに移動し、設定をクリックします。ドメインで追加し、Cloudflare で登録されたドメインをバインドします。
 
 ![m3xvecx4wnrc2xfum2image.png](https://image.jiangsi.com/blog/m3xvecx4wnrc2xfum2image.png)
 
-## 13 デプロイ後の必要な操作
+## 10 デプロイ後の必要な操作
 デプロイ後、最初にユーザーを作成する必要があります。最初のユーザーは管理者ユーザーになります。
 
 [オンラインインストールチュートリアルを見る](https://jiangsi.com/blog/edgecd-blog-setup-cloudflare-install)
 [より多くの EdgeCD 専門分野](https://jiangsi.com/collections/edgecd)
 
-## 14 AI の設定
+## 11 AI の設定
 OpenAI 互換の API アドレスを設定する必要があります。国内のユーザーは DeepSeek を推奨し、10 元のチャージで完全に使い切れません。
 注意：アドレス https://openrouter.ai/ の最後にスラッシュを付けないでください。
 
-### 14.1 wrangler.toml での設定
+### 11.1 wrangler.toml での設定
 `wrangler.toml` で設定し、`[vars]` の下に追加します。
 ```toml
 ai_apikey="sk-11111111111111111111111111111111"
@@ -213,6 +366,6 @@ ai_model="grok-beta"
 
 または、好きな OpenAI 互換のモデルを使用できます。設定しない場合、デフォルトで Cloudflare AI モデルが使用されます。パラメータは `cf_ai_model="@cf/meta/llama-3.1-70b-instruct"` です。
 
-### 14.2 ブログダッシュボードでの設定
+### 11.2 ブログダッシュボードでの設定
 ブログにログインし、左側のメニューからブログ - プロンプトを選択します。
 そこに希望する AI モデルのポートとアドレスを記入します。

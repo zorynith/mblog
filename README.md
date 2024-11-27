@@ -122,7 +122,7 @@ SITEINFO.twitter_url=""
 SITEINFO.instagram_url=""
 SITEINFO.youtube_url=""
 #R2 bind domain
-SITEINFO.oss_url="https://image.edgecd.com"
+SITEINFO.oss_url="https://images.your-domain.com"
 SITEINFO.homepagecontent="blog"
 #default ai model, can change in dashboard
 cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
@@ -254,7 +254,7 @@ Create R2 in the Cloudflare dashboard, go to the R2 Object Storage in the left s
 After binding a credit card, you can create a bucket in the dashboard. Then in the bucket setting, connect your registered domain or the domain parsed in Cloudflare, currently, if R2 is public, it must be bound through this connection.
 
 ![m3xub3cit032nxw3beimage.png](https://image.jiangsi.com/blog/m3xub3cit032nxw3beimage.png)
-We usually input a second-level domain like images.edgecd.com
+We usually input a second-level domain like images.your-domain.com
 
 And fill in the bucket name to the configuration file
 ```
@@ -264,7 +264,7 @@ bucket_name = "aiedgeblog"
 ```
 And modify the oss domain configuration in the configuration file
 ```
-SITEINFO.oss_url="https://images.edgecd.com"
+SITEINFO.oss_url="https://images.your-domain.com"
 ```
 
 ### 7. Local Development
@@ -289,12 +289,13 @@ Create the first admin user immediately after deployment
 ## 11 AI Settings
 
 Need to configure the openai compatible api address
-suggest openrouter
-Note that the address https://openrouter.ai/api should not end with a slash.
+suggest openrouter https://openrouter.ai
+
 
 
 ### 11.1 wrangler.toml settings AI configuration
 In wrangler.toml, in [vars], add
+Note that the address https://openrouter.ai/api should not end with a slash.
 
 ``` 
 ai_apikey="sk-11111111111111111111111111111111"
