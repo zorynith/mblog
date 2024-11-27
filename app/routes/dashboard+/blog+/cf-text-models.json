@@ -1,0 +1,9 @@
+{
+  "models": [
+    "@hf/google/gemma-7b-it",
+    "@hf/nousresearch/hermes-2-pro-mistral-7b",
+    "@cf/meta/llama-3.1-70b-instruct",
+    "@cf/qwen/qwen1.5-14b-chat-awq",
+    "@cf/microsoft/phi-2"
+  ]
+}

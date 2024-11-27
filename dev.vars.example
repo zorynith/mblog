@@ -1,0 +1,3 @@
+ai_apikey="sk-11111111111111111111111111111111"
+ai_endpoint="https://api.deepseek.com"
+ai_model="deepseek-chat"

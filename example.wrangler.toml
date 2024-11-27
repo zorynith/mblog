@@ -1,0 +1,61 @@
+name = "aiedgeblog"
+compatibility_date = "2024-10-04"
+assets = { directory = "./build/client" }
+main = "./server.ts"
+
+
+[vars]
+MY_VAR = "Hello from edgecd blog"
+SECRET = "SECRET"
+SITEINFO.BLOG_prefix_url="/blog"
+SITEINFO.name="name"
+SITEINFO.author="author"
+SITEINFO.desc="desc"
+SITEINFO.summary="summary"
+SITEINFO.avatar="https://ui.shadcn.com/avatars/02.png"
+SITEINFO.website_url="https://edgecd.com"
+SITEINFO.website_name="edgecd"
+SITEINFO.github_url="https://github.com/jiangsi/edgecd-blog"
+SITEINFO.twitter_url=""
+SITEINFO.instagram_url=""
+SITEINFO.youtube_url=""
+SITEINFO.oss_url="https://image.edgecd.com"
+SITEINFO.homepagecontent="blog"
+cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
+SITEINFO.theme="dark"
+SITEINFO.public_github_repo="jiangsi/public"
+SITEINFO.app_redirect_path="/dashboard"
+SITEINFO.locale="en"
+SITEINFO.hide_copyright=false
+SITEINFO.disable_signup=false
+
+
+
+[[kv_namespaces]]
+binding = "KV"
+id = "need-to-set"
+
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "need-to-set"
+# aiedgeblog-sessionStoragekv
+
+[[d1_databases]]   
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "edgeblog"
+database_id = "need-to-set"
+migrations_dir = "./drizzle/migrations/d1"
+
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "aiedgeblog"
+
+
+
+[observability]
+enabled = true
+
+
+[ai]
+binding = "AI" 
