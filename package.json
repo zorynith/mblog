@@ -11,8 +11,8 @@
     "typecheck": "tsc",
     "typegen": "wrangler types",
     "d1:g": "drizzle-kit generate --config drizzle.config.d1.json",
-    "d1:up": "npx wrangler d1 migrations apply edgeblog --remote",
-    "d1:up:local": "npx wrangler d1 migrations apply edgeblog --local"
+    "d1:up": "npx wrangler d1 migrations apply mblog --remote",
+    "d1:up:local": "npx wrangler d1 migrations apply mblog --local"
   },
   "dependencies": {
     "@conform-to/react": "^1.2.2",
@@ -114,7 +114,7 @@
     "vite": "^5.4.9",
     "vite-plugin-source-map-visualizer": "^0.2.1",
     "vite-tsconfig-paths": "^4.3.2",
-    "wrangler": "^3.86.0"
+    "wrangler": "^4.28.0"
   },
   "engines": {
     "node": ">=20.0.0"
