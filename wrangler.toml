@@ -1,0 +1,61 @@
+name = "minelibs"
+compatibility_date = "2024-10-04"
+assets = { directory = "./build/client" }
+main = "./server.ts"
+
+
+[vars]
+MY_VAR = "Welcome to Minelibs"
+SECRET = "wdsj158741"
+SITEINFO.BLOG_prefix_url="/blog"
+SITEINFO.name="Minelibs"
+SITEINFO.author="Bendy"
+SITEINFO.desc="Minecraft PE Library"
+SITEINFO.summary="Minecraft Bedrock Edition"
+SITEINFO.avatar="https://web.files.minelibs.eu.org/logo/avatar.png"
+SITEINFO.website_url="https://minelibs.eu.org"
+SITEINFO.website_name="minelibs"
+SITEINFO.github_url=""
+SITEINFO.twitter_url=""
+SITEINFO.instagram_url=""
+SITEINFO.youtube_url=""
+SITEINFO.oss_url="https://web.files.minelibs.eu.org"
+SITEINFO.homepagecontent="blog"
+cf_ai_model="@cf/meta/llama-3.1-70b-instruct"
+SITEINFO.theme="light"
+SITEINFO.public_github_repo="jiangsi/public"
+SITEINFO.app_redirect_path="/dashboard"
+SITEINFO.locale="zh"
+SITEINFO.hide_copyright=true
+SITEINFO.disable_signup=false
+SITEINFO.logo = "https://web.files.minelibs.eu.org/logo/minelibs.png"
+
+
+[[kv_namespaces]]
+binding = "KV"
+id = "26a46de2e6f54186ac376d293a30eb6e"
+
+[[kv_namespaces]]
+binding = "SESSION_KV"
+id = "db39a1a60f024cb39d408f42eb93b79b"
+# aiedgeblog-sessionStoragekv
+
+[[d1_databases]]   
+binding = "DB" # i.e. available in your Worker on env.DB
+database_name = "mblog"
+database_id = "8e466d17-cb56-4de9-8cfe-85a00b94ad14"
+migrations_dir = "./drizzle/migrations/d1"
+
+
+[[r2_buckets]]
+binding = "R2"
+bucket_name = "webfiles"
+
+
+
+[observability]
+enabled = true
+
+
+[ai]
+binding = "AI" 
